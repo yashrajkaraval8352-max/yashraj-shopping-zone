@@ -1,74 +1,53 @@
 <?php
 session_start();
+include("includes/header.php");
 include("includes/db.php");
-
-$error = "";
 
 if (isset($_POST['login'])) {
 
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
+    $email = $_POST['email'];
+    $password = $_POST['password'];
 
-    $query = "SELECT * FROM users WHERE email='$email' AND password='$password'";
-    $result = mysqli_query($conn, $query);
+    $q = "SELECT * FROM users WHERE email='$email'";
+    $r = mysqli_query($conn, $q);
 
-    if (mysqli_num_rows($result) == 1) {
+    $user = mysqli_fetch_assoc($r);
 
-        $row = mysqli_fetch_assoc($result);
+    if ($user) {
 
-        $_SESSION['user'] = $row['id'];
+        if (password_verify($password, $user['password'])) {
 
-        header("Location: index.php");
-        exit();
+            $_SESSION['user'] = $user['id'];
+
+            header("Location:index.php");
+            exit();
+
+        } else {
+            echo "<p style='text-align:center;color:red;'>Invalid Password</p>";
+        }
 
     } else {
-
-        $error = "Invalid Email or Password";
-
+        echo "<p style='text-align:center;color:red;'>User not found</p>";
     }
 
 }
 ?>
 
-<!DOCTYPE html>
-<html>
+<form method="POST">
 
-<head>
+    <h2>User Login</h2>
 
-    <title>Login</title>
+    <input type="email" name="email" placeholder="Email" required>
 
-    <!-- CSS LINK -->
-    <link rel="stylesheet" href="css/style.css">
+    <input type="password" name="password" placeholder="Password" required>
 
-</head>
+    <button name="login">Login</button>
 
-<body>
-
-    <h2>Login</h2>
-
-    <?php
-    if ($error != "") {
-        echo "<p style='color:red;text-align:center;'>$error</p>";
-    }
-    ?>
-
-    <form method="POST">
-
-        <input type="email" name="email" placeholder="Enter Email" required>
-
-        <input type="password" name="password" placeholder="Enter Password" required>
-
-        <button type="submit" name="login">
-            Login
-        </button>
-
-    </form>
-
-    <p style="text-align:center;">
-        Don't have account ?
+    <p style="text-align:center;margin-top:15px;">
+        Don't have an account?
         <a href="register.php">Register</a>
     </p>
 
-</body>
+</form>
 
-</html>
+<?php include("includes/footer.php"); ?>
