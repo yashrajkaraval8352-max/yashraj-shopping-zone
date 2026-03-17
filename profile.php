@@ -19,18 +19,22 @@ if (isset($_POST['upload'])) {
     $filename = $_FILES['photo']['name'];
     $tmp = $_FILES['photo']['tmp_name'];
 
-    $folder = "uploads/" . $filename;
+    if ($filename != "") {
 
-    move_uploaded_file($tmp, $folder);
+        $folder = "uploads/" . $filename;
 
-    mysqli_query($conn, "UPDATE users SET photo='$filename' WHERE id=$user");
+        move_uploaded_file($tmp, $folder);
+
+        mysqli_query($conn, "UPDATE users SET photo='$filename' WHERE email='$user'");
+    }
 }
 
 /* GET USER DATA */
 
-$q = "SELECT * FROM users WHERE id=$user";
+$q = "SELECT * FROM users WHERE email='$user'";
 $r = mysqli_query($conn, $q);
 $row = mysqli_fetch_assoc($r);
+
 ?>
 
 <h2>My Profile</h2>
@@ -43,7 +47,7 @@ $row = mysqli_fetch_assoc($r);
 
         <div class="profile-pic">
 
-            <?php if ($row['photo']) { ?>
+            <?php if (!empty($row['photo'])) { ?>
 
                 <img src="uploads/<?php echo $row['photo']; ?>">
 
@@ -87,7 +91,7 @@ $row = mysqli_fetch_assoc($r);
 
     <br>
 
-    <a href="logout.php">Logout</a>
+    <a href="logout.php" class="logout-btn">Logout</a>
 
 </div>
 

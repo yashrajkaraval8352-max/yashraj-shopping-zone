@@ -8,15 +8,15 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-$user = $_SESSION['user'];
+$user = intval($_SESSION['user']);
 
-$query = "SELECT * FROM orders WHERE user_id=$user ORDER BY id DESC";
-$result = mysqli_query($conn, $query);
+$q = "SELECT * FROM orders WHERE user_id=$user ORDER BY id DESC";
+$result = mysqli_query($conn, $q);
 ?>
 
 <h2>My Order History</h2>
 
-<table>
+<table border="1" cellpadding="10">
 
     <tr>
         <th>Order ID</th>
